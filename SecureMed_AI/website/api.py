@@ -23,7 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from starlette.formparsers import MultiPartParser
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy import create_engine, event, select, insert, update, delete, func
 from sqlalchemy.exc import IntegrityError
 from argon2.exceptions import VerificationError
@@ -65,6 +65,30 @@ class SavePrediction(BaseModel):
     model_config = ConfigDict(extra='forbid')
     draft_id: str = Field(min_length=32, max_length=64)
 
+def bootstrap_admin(engine):
+    """Host-controlled setup only; never accept these credentials from HTTP."""
+    username = os.environ.get('SECUREMED_ADMIN_USERNAME')
+    password = os.environ.get('SECUREMED_ADMIN_PASSWORD')
+    if username is None and password is None:
+        return
+    with engine.begin() as c:
+        c.exec_driver_sql('BEGIN IMMEDIATE')
+        # Restarts must not replace credentials or grant a second admin account.
+        if c.scalar(select(func.count()).select_from(users).where(users.c.role == 'ADMIN')):
+            return
+        try:
+            credentials = Credentials(username=username, password=password)
+        except ValidationError:
+            raise RuntimeError('Set both admin environment variables: username must be 3-40 letters/numbers/_/-, password 12-256 characters.') from None
+        if c.scalar(select(users.c.id).where(users.c.username == credentials.username.lower())):
+            raise RuntimeError('Admin setup username is already taken. Choose a different username; existing accounts are never promoted.')
+        uid = identifier()
+        c.execute(insert(users).values(id=uid, username=credentials.username.lower(),
+            password_hash=shared.PH.hash(credentials.password), role='ADMIN', created_at=utc()))
+        c.execute(insert(audit).values(actor_id=uid, action='ADMIN_PROVISIONED_FROM_ENV',
+            status='OK', created_at=utc()))
+
+
 def create_app(db_path=None, key=None, testing=False):
     db_path = Path(db_path or os.environ.get('SECUREMED_DB_PATH') or ROOT / 'securemed_web.db').resolve()
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -105,6 +129,8 @@ def create_app(db_path=None, key=None, testing=False):
         if not cookie_secure:
             raise RuntimeError('Set SECUREMED_HTTPS=1 for public hosting.')
     if testing: allowed_hosts.append('testserver')
+    if not testing:
+        bootstrap_admin(engine)
 
     @asynccontextmanager
     async def lifespan(app):
