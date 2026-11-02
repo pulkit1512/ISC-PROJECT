@@ -80,6 +80,13 @@ def run():
                 check('Denied access audit exists',c.scalar(select(func.count()).select_from(audit).where(audit.c.status=='DENIED'))>0)
             check('No plaintext details in SQLite',b'Fictional Alice Example' not in (Path(temp)/'test.db').read_bytes())
             check('Admin statistics',admin.get('/api/admin').json()['predictions']==2)
+            dashboard=admin.get('/api/admin').json()
+            check('Admin model totals',sum(r['count'] for r in dashboard['predictions_by_model'])==2)
+            check('Admin activity totals',dashboard['activity_24h']['predictions']==2 and dashboard['activity_24h']['denied']>0)
+            check('Admin unique image count',dashboard['unique_images']==1)
+            check('Admin checkpoint availability',len(dashboard['models'])==2 and all(m['checkpoint_present'] for m in dashboard['models']))
+            check('Admin metadata excludes private fields','Fictional Alice Example' not in str(dashboard) and 'password_hash' not in str(dashboard) and 'ciphertext' not in str(dashboard))
+
             uid=alice.get('/api/me').json()['user']['id']
             check('Patient cannot deactivate user',bob.patch('/api/admin/users/'+uid,json={'active':False}).status_code==403)
             check('Admin can deactivate patient',admin.patch('/api/admin/users/'+uid,json={'active':False}).status_code==200)

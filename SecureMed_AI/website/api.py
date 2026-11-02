@@ -10,7 +10,7 @@ import threading
 import time
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -397,7 +397,20 @@ def create_app(db_path=None, key=None, testing=False):
             image_bytes=c.scalar(select(func.coalesce(func.sum(func.length(images.c.ciphertext)+func.length(images.c.nonce)),0)))
             count=c.scalar(select(func.count()).select_from(predictions))
             logs=c.execute(select(audit).order_by(audit.c.id.desc()).limit(100)).mappings().all()
-        return dict(users=[dict(r) for r in account_rows],audit=[dict(r) for r in logs],database_bytes=db_path.stat().st_size,encrypted_image_bytes=image_bytes,predictions=count)
+            since=(datetime.now(timezone.utc)-timedelta(hours=24)).isoformat()
+            recent=c.execute(select(audit.c.action,audit.c.status,func.count().label('count')).where(audit.c.created_at>=since).group_by(audit.c.action,audit.c.status)).mappings().all()
+            by_model=c.execute(select(predictions.c.model_version,func.count().label('count')).group_by(predictions.c.model_version)).mappings().all()
+            image_count=c.scalar(select(func.count()).select_from(images))
+        activity=dict(predictions=sum(r['count'] for r in recent if r['action']=='PREDICT' and r['status']=='OK'),
+            denied=sum(r['count'] for r in recent if r['status']=='DENIED'),
+            registrations=sum(r['count'] for r in recent if r['action']=='SIGNUP' and r['status']=='OK'))
+
+        return dict(users=[dict(r) for r in account_rows],audit=[dict(r) for r in logs],database_bytes=db_path.stat().st_size,encrypted_image_bytes=image_bytes,predictions=count,
+            generated_at=utc(), activity_24h=activity, unique_images=image_count,
+            predictions_by_model=[dict(r) for r in by_model],
+            models=[dict(name=name,checkpoint_present=(shared.BASE/file).is_file()) for name,file in shared.MODEL_FILES.items()],
+            max_upload_mb=shared.MAX_UPLOAD//1048576,
+            temporary_storage=db_path.as_posix().startswith('/tmp/'))
 
     @app.patch('/api/admin/users/{uid}')
     def account(uid: str,data: AccountState,user=Depends(admin)):
