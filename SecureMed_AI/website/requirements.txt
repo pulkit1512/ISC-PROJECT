@@ -1,0 +1,11 @@
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+sqlalchemy>=2,<3
+alembic>=1.14,<2
+python-multipart>=0.0.20
+argon2-cffi>=23
+cryptography>=44
+torch>=2.8
+torchvision>=0.23
+Pillow>=11
+httpx>=0.28

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: securemed-ai
+    runtime: docker
+    plan: standard
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/status
+    numInstances: 1
+    disk:
+      name: securemed-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: SECUREMED_DB_PATH
+        value: /data/securemed_web.db
+      - key: SECUREMED_HTTPS
+        value: "1"
+      - key: SECUREMED_MAX_UPLOAD_MB
+        value: "10"
+      - key: SECUREMED_ENCRYPTION_KEY
+        generateValue: true

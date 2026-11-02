@@ -1,0 +1,20 @@
+# Allowlist: no dataset, secrets, local databases or environments in build context.
+**
+!Dockerfile
+!SecureMed_AI/
+!SecureMed_AI/research_support.py
+!SecureMed_AI/securemed_model.pth
+!SecureMed_AI/securemed_resnet18.pth
+!SecureMed_AI/website/
+!SecureMed_AI/website/*.py
+!SecureMed_AI/website/requirements.txt
+!SecureMed_AI/website/package.json
+!SecureMed_AI/website/package-lock.json
+!SecureMed_AI/website/index.html
+!SecureMed_AI/website/vite.config.js
+!SecureMed_AI/website/src/
+!SecureMed_AI/website/src/**
+!SecureMed_AI/website/alembic/
+!SecureMed_AI/website/alembic/**
+**/__pycache__/
+**/*.pyc

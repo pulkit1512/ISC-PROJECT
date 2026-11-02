@@ -1,0 +1,47 @@
+@layer components {
+ .auth-v2 .auth-input {width:100%;height:50px;border:1px solid #dce3e8;border-radius:10px;background:white;color:#233747;font-size:13px;font-weight:400;transition:border-color .2s,box-shadow .2s}
+ .auth-v2 .auth-input:hover{border-color:#b9ccce}
+ .auth-v2 .auth-input:focus{outline:none;border-color:#278b80;box-shadow:0 0 0 3px #d7eee9}
+ .auth-v2 .auth-input::placeholder{color:#a1acb7;font-size:12px}
+ .scan-grid{background-image:linear-gradient(#d6fff704 1px,transparent 1px),linear-gradient(90deg,#d6fff704 1px,transparent 1px);background-size:22px 22px}
+ .workspace{background:#f5f7fa}
+ .workspace aside{background:#0b252e;border:none;padding:32px 22px;color:#e7f0f2}
+ .workspace aside .brand{color:white}
+ .workspace aside .brand-icon{background:#17434a;color:#8bd8cb;border:1px solid #2b555a}
+ .workspace aside .brand small{color:#79a0a3}
+ .workspace .nav-label{color:#64858c;font-size:9px;letter-spacing:1.8px}
+ .workspace .nav-item{color:#8eabb1;border-radius:10px;padding:15px 13px;margin-bottom:3px}
+ .workspace .nav-item.active{color:#b5e9df;background:#173e46;box-shadow:inset 3px 0 #79cebc}
+ .workspace .nav-item:hover{background:#13343e}
+ .workspace .sidebar-note{color:#6d8e94}
+ .workspace .sidebar-note strong{color:#9fbdbf}
+ .workspace .sidebar-note svg{color:#79b5aa}
+ .workspace .account{border-color:#23424c;color:#dce8e9}
+ .workspace .account small{color:#76999f}
+ .workspace .account .avatar{background:#24434b;color:#a8d2c8}
+ .workspace .icon-button{color:#9eb9bd}
+ .workspace header{background:#fff;border-color:#e8edf0;color:#8a98a7;height:78px}
+ .workspace h1{color:#20333e;font-weight:600;letter-spacing:-1.2px}
+ .workspace .eyebrow{color:#3c8c80;letter-spacing:1.8px}
+ .workspace .card{border-color:#e5ebef;border-radius:16px;box-shadow:0 4px 20px #13354004;padding:28px}
+ .workspace .primary{border-radius:10px;background:#15766c;box-shadow:0 5px 12px #075f5a12;font-size:12px;min-height:48px}
+ .workspace .patient-strip{border-radius:12px;border-color:#e1e9eb;background:linear-gradient(100deg,#fff,#f8fcfa);padding:16px 20px}
+ .workspace .steps{padding:15px 18px;border:1px solid #e5eceb;border-radius:10px;background:white;width:fit-content}
+ .workspace .upload-area{border-radius:12px;min-height:255px;background:#f8fbfc;border-color:#bfd3d5}
+ .workspace .upload-area.has-image{background:#132830}
+ .workspace .upload-icon{border:1px solid #d5e9e5;background:#edf7f3;border-radius:16px;width:56px;height:56px}
+ .workspace .model-card{border-radius:10px;padding:15px 13px}
+ .workspace .model-card.selected{background:#eff8f5;border-color:#81b7a8;box-shadow:0 0 0 1px #81b7a80a}
+ .workspace .result-empty>span{border:1px solid #e4eee8;background:radial-gradient(circle,#f4f9f6,#edf5f0);width:102px;height:102px}
+ .workspace .result-card .section-label{padding-bottom:18px;border-bottom:1px solid #edf1f2}
+ .workspace .disclaimer{border-radius:12px;background:#eef5f3;border-color:#dae9e3}
+ .workspace input,.workspace select{border-radius:9px;padding:13px 14px;border-color:#dce5e7;font-size:13px;min-height:46px}
+ .workspace .metrics .card{position:relative;overflow:hidden}
+ .workspace .metrics .card:after{content:'';position:absolute;width:100px;height:100px;border-radius:50%;background:#edf7f3;right:-45px;top:-40px}
+ .workspace .table-scroll th{background:#f9fbfc;letter-spacing:1px;padding:15px 12px}
+ .workspace .table-scroll td{padding:16px 12px}
+ .workspace .record-row{padding:17px 8px;border-radius:9px;margin-bottom:4px}
+ .workspace .record-row:hover{background:#f6faf8}
+ @media(max-width:700px){.workspace aside{padding:18px 20px}.workspace header{height:48px}.workspace .account{border:0}.workspace .account .icon-button{padding:6px}.workspace .card{padding:20px}.workspace .nav-item{padding:10px;font-size:10px}.workspace .steps{padding:12px;width:100%;justify-content:center}.workspace .steps i{width:14px}.workspace .metrics .card{padding:17px}.workspace .patient-strip{padding:14px}.workspace .upload-area{min-height:225px}}
+ @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+}
